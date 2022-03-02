@@ -8,5 +8,14 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MyLab.ApiClient" Version="3.6.20" />
+    <PackageReference Include="MyLab.HttpMetrics" Version="1.0.2" />
+    <PackageReference Include="MyLab.Log.Ctx" Version="2.0.0" />
+    <PackageReference Include="MyLab.Log.Dsl" Version="3.0.1" />
+    <PackageReference Include="MyLab.StatusProvider" Version="1.5.9" />
+    <PackageReference Include="Quartz" Version="3.2.4" />
+  </ItemGroup>
+
 
 </Project>

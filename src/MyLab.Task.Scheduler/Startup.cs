@@ -1,14 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MyLab.HttpMetrics;
+using MyLab.Log.Ctx;
 
 namespace MyLab.Task.Scheduler
 {
@@ -24,7 +21,11 @@ namespace MyLab.Task.Scheduler
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services
+                .AddLogging(l => l.AddConsole())
+                .AddLogCtx()
+                .AddControllers();
+            services.AddUrlBasedHttpMetrics();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,6 +37,7 @@ namespace MyLab.Task.Scheduler
             }
 
             app.UseRouting();
+            app.UseUrlBasedHttpMetrics();
 
             app.UseAuthorization();
 
