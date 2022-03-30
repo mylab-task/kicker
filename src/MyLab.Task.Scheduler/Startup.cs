@@ -1,13 +1,9 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyLab.Log;
-using Quartz;
-using YamlDotNet.Serialization;
 
 namespace MyLab.Task.Scheduler
 {
@@ -23,26 +19,18 @@ namespace MyLab.Task.Scheduler
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddHttpClient();
+            
+            //services.AddControllers();
+
             services.AddLogging(l => l.AddMyLabConsole());
+            services.AddSingleton<ITaskKickerService, TaskKickerService>();
 
             var jobsConfig = JobOptionsConfig.Load("jobs.yml");
+            var intervalConfigurator = new IntervalTriggerConfigurator();
 
-            services.AddQuartz(q =>
-            {
-                q.UseMicrosoftDependencyInjectionJobFactory();
-
-                if (jobsConfig.Jobs != null)
-                {
-                    foreach (var jobOptions in jobsConfig.Jobs)
-                    {
-                        RegisterTaskKickJob(q, jobOptions);   
-                    }
-                }
-            });
-
-            services.AddQuartzHostedService();
+            services.AddSchedulerLogic(jobsConfig, intervalConfigurator);
+            
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,28 +43,12 @@ namespace MyLab.Task.Scheduler
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
-
-        static void RegisterTaskKickJob(IServiceCollectionQuartzConfigurator configurator, JobOptions jobOptions)
-        {
-            var jobKey = new JobKey(jobOptions.Id);
-            
-            configurator
-                .AddJob<KickTaskJob>(c => c
-                    .WithIdentity(jobKey)
-                    .UsingJobData(jobOptions.ToJobDataMap())
-                )
-                .AddTrigger(c => c
-                    .ForJob(jobKey)
-                    .WithIdentity(jobKey + "-trigger")
-                    .WithCronSchedule(jobOptions.Cron)
-                );
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
         }
     }
 }

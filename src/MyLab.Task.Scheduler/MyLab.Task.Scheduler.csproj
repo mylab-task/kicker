@@ -9,6 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.2.0" />
+    <PackageReference Include="Moq" Version="4.17.2" />
     <PackageReference Include="MyLab.Log" Version="3.3.12" />
     <PackageReference Include="MyLab.Log.Dsl" Version="3.5.3" />
     <PackageReference Include="Quartz.AspNetCore" Version="3.4.0" />

@@ -37,7 +37,7 @@ namespace MyLab.Task.Scheduler
         }
     }
 
-    class JobOptions
+    public class JobOptions
     {
         private const string IdKey = "id";
         private const string CronKey = "cron";
@@ -45,18 +45,22 @@ namespace MyLab.Task.Scheduler
         private const string PathKey = "path";
         private const string PortKey = "port";
         private const string HeadersKey = "headers";
-        
+
+        public const string DefaultCron = "0 * * * *";
+        public const string DefaultPath = "/processing";
+        public const int DefaultPort = 80;
+
         [YamlMember(Alias = IdKey)]
         public string  Id { get; set; } = Guid.NewGuid().ToString("N");
 
         [YamlMember(Alias = CronKey)]
-        public string Cron { get; set; }
+        public string Cron { get; set; } = DefaultCron;
         [YamlMember(Alias = HostKey)]
         public string Host { get; set; }
         [YamlMember(Alias = PathKey)] 
-        public string Path { get; set; } = "/processing";
+        public string Path { get; set; } = DefaultPath;
         [YamlMember(Alias = PortKey)]
-        public int Port { get; set; } = 80;
+        public int Port { get; set; } = DefaultPort;
         [YamlMember(Alias = HeadersKey)]
         public Dictionary<string,string> Headers { get; set; }
 

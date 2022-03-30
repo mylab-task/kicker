@@ -9,12 +9,12 @@ namespace MyLab.Task.Scheduler
     [DisallowConcurrentExecution]
     public class KickTaskJob : IJob
     {
-        private readonly HttpClient _httpClient;
+        private readonly ITaskKickerService _taskKickerService;
         private readonly IDslLogger _logger;
 
-        public KickTaskJob(HttpClient httpClient, ILogger<KickTaskJob> logger)
+        public KickTaskJob(ITaskKickerService taskKickerService, ILogger<KickTaskJob> logger)
         {
-            _httpClient = httpClient;
+            _taskKickerService = taskKickerService;
             _logger = logger.Dsl();
         }
 
@@ -24,21 +24,9 @@ namespace MyLab.Task.Scheduler
 
             try
             {
-                var uriB = new UriBuilder("http", opts.Host, opts.Port, opts.Path);
+                var kickOptions = new KickOptions(opts);
 
-                using var request = new HttpRequestMessage(HttpMethod.Post, uriB.Uri);
-
-                if (opts.Headers != null)
-                {
-                    foreach (var optsHeader in opts.Headers)
-                    {
-                        request.Headers.Add(optsHeader.Key, optsHeader.Value);
-                    }
-                }
-
-                var response = await _httpClient.SendAsync(request);
-
-                response.EnsureSuccessStatusCode();
+                await _taskKickerService.KickAsync(kickOptions);
 
                 _logger.Action("Task kicked successfully")
                     .AndFactIs("job-id", opts.Id)

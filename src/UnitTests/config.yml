@@ -1,0 +1,10 @@
+﻿jobs:
+- id: 'foo'
+  cron: '* * * *'
+  host: 'localhost'
+  path: '/path'
+  port: 8080
+  headers: 
+    foo-key: foo-val
+    bar-key: bar-val
+- id: 'bar'
