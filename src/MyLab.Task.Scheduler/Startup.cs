@@ -26,9 +26,8 @@ namespace MyLab.Task.Scheduler
             services.AddSingleton<ITaskKickerService, TaskKickerService>();
 
             var jobsConfig = JobOptionsConfig.Load("jobs.yml");
-            var intervalConfigurator = new IntervalTriggerConfigurator();
 
-            services.AddSchedulerLogic(jobsConfig, intervalConfigurator);
+            services.AddSchedulerLogic(jobsConfig);
             
             
         }

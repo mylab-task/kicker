@@ -70,9 +70,9 @@ namespace MyLab.Task.Scheduler
             {
                 { IdKey, Id },
                 { CronKey, Cron },
-                { HostKey, HostKey },
+                { HostKey, Host },
                 { PathKey, Path },
-                { PortKey, PortKey }
+                { PortKey, Port }
             };
 
             if (Headers != null)

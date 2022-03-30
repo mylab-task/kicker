@@ -5,7 +5,7 @@ namespace MyLab.Task.Scheduler
 {
     static class SchedulerLogicIntegration
     {
-        public static void AddSchedulerLogic(this IServiceCollection services, JobOptionsConfig jobsConfig, IIntervalTriggerConfigurator intervalConfigurator)
+        public static void AddSchedulerLogic(this IServiceCollection services, JobOptionsConfig jobsConfig)
         {
             services.AddHttpClient();
 
@@ -17,7 +17,7 @@ namespace MyLab.Task.Scheduler
                 {
                     foreach (var jobOptions in jobsConfig.Jobs)
                     {
-                        RegisterTaskKickJob(q, intervalConfigurator, jobOptions);
+                        RegisterTaskKickJob(q, jobOptions);
                     }
                 }
             });
@@ -25,7 +25,7 @@ namespace MyLab.Task.Scheduler
             services.AddQuartzHostedService();
         }
 
-        static void RegisterTaskKickJob(IServiceCollectionQuartzConfigurator configurator, IIntervalTriggerConfigurator intervalConfigurator, JobOptions jobOptions)
+        static void RegisterTaskKickJob(IServiceCollectionQuartzConfigurator configurator, JobOptions jobOptions)
         {
             var jobKey = new JobKey(jobOptions.Id);
 
@@ -34,14 +34,11 @@ namespace MyLab.Task.Scheduler
                     .WithIdentity(jobKey)
                     .UsingJobData(jobOptions.ToJobDataMap())
                 )
-                .AddTrigger(c =>
-                {
-                    c
+                .AddTrigger(c => c
                         .ForJob(jobKey)
-                        .WithIdentity(jobKey + "-trigger");
-
-                    intervalConfigurator.Configure(c, jobOptions);
-                });
+                        .WithIdentity(jobKey + "-trigger")
+                        .WithCronSchedule(jobOptions.Cron)
+                );
 
         }
     }
