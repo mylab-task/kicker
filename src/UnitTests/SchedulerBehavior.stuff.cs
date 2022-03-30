@@ -36,8 +36,8 @@ namespace UnitTests
                     services.AddSchedulerLogic(jobsConfig);
                 })
                 .Build();
-
-            var runTask = host.RunAsync();
+            
+            await host.StartAsync();
 
             await Task.Delay(TimeSpan.FromSeconds(0.9));
 
