@@ -4,37 +4,27 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Moq;
 using MyLab.Task.Scheduler;
-using Quartz;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace UnitTests
 {
-    public partial class SchedulerBehavior
+    public class SchedulerBehavior
     {
+        private readonly ITestOutputHelper _output;
+
+        public SchedulerBehavior(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public async Task ShouldKickTask()
         {
             //Arrange
-            var actualJob = new JobOptions
-            {
-                Cron = "0/1 * * * * ?"
-            };
             var kickService = new TestTaskKickerService();
 
-            //Act
-            await KickTaskAsync(actualJob, kickService);
-
-            //Assert
-            Assert.Equal(2, kickService.KickCount);
-        }
-
-        [Fact]
-        public async Task ShouldKickTaskWithSpecifiedParameters()
-        {
-            //Arrange
             var actualJob = new JobOptions
             {
                 Cron = "0/1 * * * * ?",
@@ -46,36 +36,54 @@ namespace UnitTests
                     {"foo", "bar"}
                 }
             };
-            var kickService = new TestTaskKickerService();
-            
+
             //Act
-            await KickTaskAsync(actualJob, kickService);
+            var jobsConfig = new JobOptionsConfig
+            {
+                Jobs = new[] { actualJob }
+            };
+
+            using var host = new HostBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.AddLogging(l => l
+                        .AddFilter(f => true)
+                        .AddXUnit(_output)
+                    );
+
+                    services.AddSingleton<ITaskKickerService>(kickService);
+                    services.AddSchedulerLogic(jobsConfig);
+                })
+                .Build();
+
+            await host.StartAsync();
+
+            await Task.Delay(TimeSpan.FromSeconds(0.9));
+
+            await host.StopAsync();
 
             //Assert
+            Assert.Equal(2, kickService.KickCount);
+
             Assert.Equal(actualJob.Host, kickService.LastKickOptions.Host);
             Assert.Equal(actualJob.Path, kickService.LastKickOptions.Path);
             Assert.Equal(actualJob.Port, kickService.LastKickOptions.Port);
             Assert.Equal(actualJob.Headers, kickService.LastKickOptions.Headers);
         }
 
-        [Fact]
-        public async Task ShouldKickTaskWithDefaultParameters()
+        private class TestTaskKickerService : ITaskKickerService
         {
-            //Arrange
-            var actualJob = new JobOptions
+            public int KickCount { get; private set; }
+
+            public KickOptions LastKickOptions { get; private set; }
+
+            public Task KickAsync(KickOptions kickOptions)
             {
-                Cron = "0/1 * * * * ?",
-            };
-            var kickService = new TestTaskKickerService();
+                KickCount += 1;
+                LastKickOptions = kickOptions;
 
-            //Act
-            await KickTaskAsync(actualJob, kickService);
-
-            //Assert
-            Assert.Null(kickService.LastKickOptions.Host);
-            Assert.Equal(JobOptions.DefaultPath, kickService.LastKickOptions.Path);
-            Assert.Equal(JobOptions.DefaultPort, kickService.LastKickOptions.Port);
-            Assert.Null(kickService.LastKickOptions.Headers);
+                return Task.CompletedTask;
+            }
         }
     }
 }
