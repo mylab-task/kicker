@@ -26,10 +26,11 @@ namespace MyLab.Task.Scheduler
             {
                 var kickOptions = new KickOptions(opts);
 
-                await _taskKickerService.KickAsync(kickOptions);
+                var response = await _taskKickerService.KickAsync(kickOptions);
 
-                _logger.Action("Task kicked successfully")
+                _logger.Action("Task kicked")
                     .AndFactIs("job-id", opts.Id)
+                    .AndFactIs("task-resp", response)
                     .Write();
             }
             catch (Exception e)

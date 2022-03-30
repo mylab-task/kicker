@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 
 namespace MyLab.Task.Scheduler
 {
@@ -12,7 +13,7 @@ namespace MyLab.Task.Scheduler
             _httpClient = httpClient;
         }
 
-        public async System.Threading.Tasks.Task KickAsync(KickOptions opts)
+        public async System.Threading.Tasks.Task<TaskKickResult> KickAsync(KickOptions opts)
         {
             var uriB = new UriBuilder("http", opts.Host, opts.Port, opts.Path);
 
@@ -28,7 +29,16 @@ namespace MyLab.Task.Scheduler
 
             var response = await _httpClient.SendAsync(request);
 
-            response.EnsureSuccessStatusCode();
+            await using var readStream = await response.Content.ReadAsStreamAsync();
+
+            byte[] respContentBuff = new byte[2000];
+            var read = await readStream.ReadAsync(respContentBuff, 0, respContentBuff.Length);
+
+            return new TaskKickResult
+            {
+                Response = Encoding.UTF8.GetString(respContentBuff, 0, read),
+                StatusCode = response.StatusCode
+            };
         }
     }
 }

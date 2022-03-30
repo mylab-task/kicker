@@ -2,6 +2,6 @@
 {
     public interface ITaskKickerService
     {
-        System.Threading.Tasks.Task KickAsync(KickOptions kickOptions);
+        System.Threading.Tasks.Task<TaskKickResult> KickAsync(KickOptions kickOptions);
     }
 }

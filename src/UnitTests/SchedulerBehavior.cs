@@ -77,12 +77,12 @@ namespace UnitTests
 
             public KickOptions LastKickOptions { get; private set; }
 
-            public Task KickAsync(KickOptions kickOptions)
+            public Task<TaskKickResult> KickAsync(KickOptions kickOptions)
             {
                 KickCount += 1;
                 LastKickOptions = kickOptions;
 
-                return Task.CompletedTask;
+                return Task.FromResult(new TaskKickResult());
             }
         }
     }
