@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using MyLab.HttpMetrics;
-using MyLab.Log.Ctx;
+using MyLab.Log;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
     public class Startup
     {
@@ -21,11 +19,17 @@ namespace MyLab.Task.Scheduler
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddLogging(l => l.AddConsole())
-                .AddLogCtx()
-                .AddControllers();
-            services.AddUrlBasedHttpMetrics();
+            
+            //services.AddControllers();
+
+            services.AddLogging(l => l.AddMyLabConsole());
+            services.AddSingleton<ITaskKickerService, TaskKickerService>();
+
+            var jobsConfig = JobOptionsConfig.Load("jobs.yml");
+
+            services.AddKickerLogic(jobsConfig);
+            
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,14 +41,13 @@ namespace MyLab.Task.Scheduler
             }
 
             app.UseRouting();
-            app.UseUrlBasedHttpMetrics();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
         }
     }
 }
