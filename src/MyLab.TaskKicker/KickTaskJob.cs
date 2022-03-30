@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using MyLab.Log.Dsl;
 using Quartz;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
     [DisallowConcurrentExecution]
     public class KickTaskJob : IJob

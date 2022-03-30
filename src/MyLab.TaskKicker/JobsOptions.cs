@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
 using MyLab.Log;
 using Quartz;
 using YamlDotNet.Serialization;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
     class JobOptionsConfig
     {

@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Text;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
     class TaskKickerService : ITaskKickerService
     {

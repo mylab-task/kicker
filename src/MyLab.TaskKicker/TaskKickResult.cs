@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
     public class TaskKickResult
     {

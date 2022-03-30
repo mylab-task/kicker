@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
     public class KickOptions
     {

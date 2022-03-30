@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyLab.Task.Scheduler\MyLab.Task.Scheduler.csproj" />
+    <ProjectReference Include="..\MyLab.TaskKicker\MyLab.TaskKicker.csproj" />
   </ItemGroup>
 
   <ItemGroup>

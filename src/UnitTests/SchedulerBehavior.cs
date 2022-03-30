@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MyLab.Task.Scheduler;
+using MyLab.TaskKicker;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -52,7 +52,7 @@ namespace UnitTests
                     );
 
                     services.AddSingleton<ITaskKickerService>(kickService);
-                    services.AddSchedulerLogic(jobsConfig);
+                    services.AddKickerLogic(jobsConfig);
                 })
                 .Build();
 

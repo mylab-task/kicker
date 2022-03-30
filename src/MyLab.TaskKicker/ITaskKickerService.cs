@@ -1,4 +1,4 @@
-﻿namespace MyLab.Task.Scheduler
+﻿namespace MyLab.TaskKicker
 {
     public interface ITaskKickerService
     {

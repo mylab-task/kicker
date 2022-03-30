@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using MyLab.Task.Scheduler;
+using MyLab.TaskKicker;
 using Xunit;
 
 namespace UnitTests

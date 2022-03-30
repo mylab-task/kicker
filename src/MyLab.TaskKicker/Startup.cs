@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyLab.Log;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
     public class Startup
     {
@@ -27,7 +27,7 @@ namespace MyLab.Task.Scheduler
 
             var jobsConfig = JobOptionsConfig.Load("jobs.yml");
 
-            services.AddSchedulerLogic(jobsConfig);
+            services.AddKickerLogic(jobsConfig);
             
             
         }

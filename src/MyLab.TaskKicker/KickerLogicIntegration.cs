@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 
-namespace MyLab.Task.Scheduler
+namespace MyLab.TaskKicker
 {
-    static class SchedulerLogicIntegration
+    static class KickerLogicIntegration
     {
-        public static void AddSchedulerLogic(this IServiceCollection services, JobOptionsConfig jobsConfig)
+        public static void AddKickerLogic(this IServiceCollection services, JobOptionsConfig jobsConfig)
         {
             services.AddHttpClient();
 
