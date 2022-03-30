@@ -1,14 +1,13 @@
+using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MyLab.Log;
+using Quartz;
+using YamlDotNet.Serialization;
 
 namespace MyLab.Task.Scheduler
 {
@@ -25,6 +24,25 @@ namespace MyLab.Task.Scheduler
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddHttpClient();
+            services.AddLogging(l => l.AddMyLabConsole());
+
+            var jobsConfig = JobOptionsConfig.Load("jobs.yml");
+
+            services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionJobFactory();
+
+                if (jobsConfig.Jobs != null)
+                {
+                    foreach (var jobOptions in jobsConfig.Jobs)
+                    {
+                        RegisterTaskKickJob(q, jobOptions);   
+                    }
+                }
+            });
+
+            services.AddQuartzHostedService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +61,22 @@ namespace MyLab.Task.Scheduler
             {
                 endpoints.MapControllers();
             });
+        }
+
+        static void RegisterTaskKickJob(IServiceCollectionQuartzConfigurator configurator, JobOptions jobOptions)
+        {
+            var jobKey = new JobKey(jobOptions.Id);
+            
+            configurator
+                .AddJob<KickTaskJob>(c => c
+                    .WithIdentity(jobKey)
+                    .UsingJobData(jobOptions.ToJobDataMap())
+                )
+                .AddTrigger(c => c
+                    .ForJob(jobKey)
+                    .WithIdentity(jobKey + "-trigger")
+                    .WithCronSchedule(jobOptions.Cron)
+                );
         }
     }
 }
