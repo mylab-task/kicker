@@ -54,7 +54,7 @@ version: '3.3'
 services:
   task-kicker:
     container_name: task-kicker
-    image: docker pull ghcr.io/mylab-task/task-kicker:latest
+    image: ghcr.io/mylab-task/task-kicker:latest
     volumes:
     - ./jobs.yml:/app/jobs.yml
 ```
